@@ -1,4 +1,4 @@
-module generator
+module transformer
 
 go 1.12
 

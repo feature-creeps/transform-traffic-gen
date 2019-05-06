@@ -1,7 +1,7 @@
 package main
 
 import (
-	"generator/cmd"
+	"transformer/cmd"
 )
 
 func main() {

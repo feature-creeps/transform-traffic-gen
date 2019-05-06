@@ -16,7 +16,7 @@ var fetchUrl, transformUrl string
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:   "generator",
+	Use:   "transformer",
 	Short: "o11y workshop image transformation requests generator",
 	Long:  "generate a stream of image transform request data for vegeta. Uses the REST API to find image names prefixed with `gen_up_` and generates random transforms for them",
 	RunE: func(cmd *cobra.Command, args []string) error {
