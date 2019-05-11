@@ -14,6 +14,7 @@ import (
 )
 
 var fetchUrl, transformUrl string
+var count int
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
@@ -28,40 +29,44 @@ var rootCmd = &cobra.Command{
 			return fmt.Errorf("unable to find images: %v\n", err)
 		}
 
-		for {
-			transformations := transformsFor(images)
-			asTargets(transformations)
-		}
+		transformations := transformsFor(images, count)
+		asTargets(transformations)
 
 		return nil
 	},
 }
 
-func transformsFor(images []Image) []ImageTransformation {
+func transformsFor(images []Image, count int) []ImageTransformation {
 
 	var transforms []ImageTransformation
 
-	for _, image := range images {
+	for {
 
-		var operations []Transformation
+		for _, image := range images {
 
-		operations = addGrayscale(operations)
-		operations = addFlip(operations)
-		operations = addRotate(operations)
-		operations = addResize(operations)
+			var operations []Transformation
 
-		transform := ImageTransformation{
-			ID:              image.ID,
-			Save:            true,
-			Name:            fmt.Sprintf("gen_tr_%s", randomdata.StringNumberExt(2, "-", 9)),
-			Transformations: operations,
+			operations = addGrayscale(operations)
+			operations = addFlip(operations)
+			operations = addRotate(operations)
+			operations = addResize(operations)
+
+			transform := ImageTransformation{
+				ID:              image.ID,
+				Save:            true,
+				Name:            fmt.Sprintf("gen_tr_%s", randomdata.StringNumberExt(2, "-", 9)),
+				Transformations: operations,
+			}
+
+			transforms = append(transforms, transform)
+
+			if len(transforms) == count {
+				return transforms
+			}
+
 		}
 
-		transforms = append(transforms, transform)
-
 	}
-
-	return transforms
 
 }
 
@@ -196,6 +201,7 @@ func Execute() {
 
 	rootCmd.Flags().StringVarP(&fetchUrl, "fetchurl", "f", "http://localhost:8081/api/images/nameContaining/gen_up_", "API endpoint for finding images")
 	rootCmd.Flags().StringVarP(&transformUrl, "transformurl", "t", "http://localhost:8080/api/images/transform", "URL for image transformation")
+	rootCmd.Flags().IntVarP(&count, "number", "n", 100, "Number of transformations to generate")
 
 	if err := rootCmd.Execute(); err != nil {
 		_, _ = fmt.Fprintln(os.Stderr, err)
