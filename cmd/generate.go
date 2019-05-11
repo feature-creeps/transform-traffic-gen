@@ -52,7 +52,7 @@ func transformsFor(images []Image) []ImageTransformation {
 
 		transform := ImageTransformation{
 			ID:              image.ID,
-			Save:            randomdata.Boolean(),
+			Save:            true,
 			Name:            fmt.Sprintf("gen_tr_%s", randomdata.StringNumberExt(2, "-", 9)),
 			Transformations: operations,
 		}
