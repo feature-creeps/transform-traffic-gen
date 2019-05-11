@@ -10,6 +10,7 @@ import (
 	"github.com/tsenart/vegeta/lib"
 	"net/http"
 	"os"
+	"strconv"
 )
 
 var fetchUrl, transformUrl string
@@ -28,7 +29,7 @@ var rootCmd = &cobra.Command{
 		}
 
 		for {
-			transformations := transform(images)
+			transformations := transformsFor(images)
 			asTargets(transformations)
 		}
 
@@ -36,19 +37,24 @@ var rootCmd = &cobra.Command{
 	},
 }
 
-func transform(images []Image) []ImageTransformation {
+func transformsFor(images []Image) []ImageTransformation {
 
 	var transforms []ImageTransformation
 
 	for _, image := range images {
 
+		var operations []Transformation
+
+		operations = addGrayscale(operations)
+		operations = addFlip(operations)
+		operations = addRotate(operations)
+		operations = addResize(operations)
+
 		transform := ImageTransformation{
-			ID:   image.ID,
-			Save: true,
-			Name: fmt.Sprintf("gen_tr_%s", randomdata.StringNumberExt(2, "-", 9)),
-			Transformations: []Transformation{
-				{Type: "grayscale"},
-			},
+			ID:              image.ID,
+			Save:            randomdata.Boolean(),
+			Name:            fmt.Sprintf("gen_tr_%s", randomdata.StringNumberExt(2, "-", 9)),
+			Transformations: operations,
 		}
 
 		transforms = append(transforms, transform)
@@ -56,6 +62,53 @@ func transform(images []Image) []ImageTransformation {
 	}
 
 	return transforms
+
+}
+
+// addGrayscale adds a grayscale transformation on a random basis
+func addGrayscale(transformations []Transformation) []Transformation {
+
+	if randomdata.Boolean() {
+		transformations = append(transformations, Transformation{Type: "grayscale"})
+	}
+
+	return transformations
+
+}
+
+// addFlip adds a flip transformation on a random basis
+func addFlip(transformations []Transformation) []Transformation {
+
+	if randomdata.Boolean() {
+
+		transformations = append(transformations, Transformation{Type: "flip", Properties: map[string]string{"vertical": strconv.FormatBool(randomdata.Boolean()), "horizontal": strconv.FormatBool(randomdata.Boolean())}})
+	}
+
+	return transformations
+
+}
+
+// addRotate adds a rotate transformation on a random basis
+func addRotate(transformations []Transformation) []Transformation {
+
+	if randomdata.Boolean() {
+
+		transformations = append(transformations, Transformation{Type: "rotate", Properties: map[string]string{"degrees": strconv.Itoa(randomdata.Number(-360, 360))}})
+	}
+
+	return transformations
+
+}
+
+// addResize adds a resize transformation on a random basis
+func addResize(transformations []Transformation) []Transformation {
+
+	if randomdata.Boolean() {
+
+		transformations = append(transformations, Transformation{Type: "resize", Properties: map[string]string{"factor": strconv.FormatFloat(randomdata.Decimal(3), 'f', 2, 64)}})
+	}
+
+	return transformations
 
 }
 
