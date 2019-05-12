@@ -54,7 +54,7 @@ func transformsFor(images []Image, count int) []ImageTransformation {
 			transform := ImageTransformation{
 				ID:              image.ID,
 				Save:            true,
-				Name:            fmt.Sprintf("gen_tr_%s", randomdata.StringNumberExt(2, "-", 9)),
+				Name:            fmt.Sprintf("transformed %s %s", randomdata.Adjective(), randomdata.Noun()),
 				Transformations: operations,
 			}
 
@@ -199,7 +199,7 @@ func asTarget(transformation ImageTransformation) (*vegeta.Target, error) {
 
 func Execute() {
 
-	rootCmd.Flags().StringVarP(&fetchUrl, "fetchurl", "f", "http://localhost:8081/api/images/nameContaining/gen_up_", "API endpoint for finding images")
+	rootCmd.Flags().StringVarP(&fetchUrl, "fetchurl", "f", "http://localhost:8081/api/images/nameContaining/uploaded", "API endpoint for finding images")
 	rootCmd.Flags().StringVarP(&transformUrl, "transformurl", "t", "http://localhost:8080/api/images/transform", "URL for image transformation")
 	rootCmd.Flags().IntVarP(&count, "number", "n", 100, "Number of transformations to generate")
 
