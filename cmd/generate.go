@@ -53,7 +53,7 @@ func transformsFor(images []Image, count int) []ImageTransformation {
 
 			transform := ImageTransformation{
 				ID:              image.ID,
-				Save:            true,
+				Save:            randomBoolean(10),
 				Name:            fmt.Sprintf("gen_tr_%s", randomdata.StringNumberExt(2, "-", 9)),
 				Transformations: operations,
 			}
@@ -68,6 +68,10 @@ func transformsFor(images []Image, count int) []ImageTransformation {
 
 	}
 
+}
+
+func randomBoolean(truePercentage int) bool {
+	return randomdata.Number(100)%truePercentage < truePercentage
 }
 
 // addGrayscale adds a grayscale transformation on a random basis
